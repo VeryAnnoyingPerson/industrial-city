@@ -27,6 +27,12 @@
         .button:hover {
             background-color: #0056b3;
         }
+        #gameCanvas {
+            display: none; /* Hide game at start */
+            margin-top: 20px;
+            background-color: white;
+            border: 2px solid black;
+        }
     </style>
 </head>
 <body>
@@ -37,21 +43,33 @@
     <button class="button" onclick="openSettings()">Settings</button>
     <button class="button" onclick="showCredits()">Credits</button>
 
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
     <script>
         function startGame() {
-            alert("Starting the game...");
-            // Redirect to the game or start game logic here
-            window.location.href = "game.html"; // Change this if needed
+            document.getElementById("gameCanvas").style.display = "block";
+            let canvas = document.getElementById("gameCanvas");
+            let ctx = canvas.getContext("2d");
+
+            // Simple game loop (example)
+            let x = 50, y = 50;
+            function gameLoop() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "blue";
+                ctx.fillRect(x, y, 50, 50); // Draw a blue square
+                x += 1; // Move square
+                if (x < canvas.width - 50) requestAnimationFrame(gameLoop);
+            }
+            gameLoop();
         }
 
         function openSettings() {
             alert("Opening settings...");
-            // Redirect to settings or open a modal
         }
 
         function showCredits() {
             alert("Game by [Your Name]");
-            // You can also load a credits page
         }
     </script>
 
