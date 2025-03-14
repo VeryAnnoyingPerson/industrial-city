@@ -44,14 +44,15 @@
     <button class="button" onclick="showCredits()">Credits</button>
 
     <!-- Game Canvas -->
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <canvas id="gameCanvas" width="800" height="800"></canvas>
 
     <script>
         let tileset = new Image();
-        // Update the URL to match your specific file location
-        tileset.src = "https://raw.githubusercontent.com/VeryAnnoyingPerson/industrial-city/main/tile_0001.png";  // Update with the correct URL
+        tileset.src = "https://raw.githubusercontent.com/VeryAnnoyingPerson/industrial-city/main/your-image.png"; // Update with the correct URL
 
         let canvas, ctx;
+        let dragStartX = 0, dragStartY = 0; // Starting positions for drag
+        let offsetX = 0, offsetY = 0; // Offsets for dragging
 
         // Start the game when the "Play" button is pressed
         function startGame() {
@@ -69,15 +70,46 @@
             tileset.onerror = function() {
                 console.error("Error loading the tileset image");
             }
+
+            // Event listeners for dragging
+            canvas.addEventListener("mousedown", startDrag);
+            canvas.addEventListener("mousemove", dragCanvas);
+            canvas.addEventListener("mouseup", stopDrag);
+            canvas.addEventListener("mouseleave", stopDrag);
+        }
+
+        // Handle the start of a drag
+        function startDrag(event) {
+            dragStartX = event.clientX - offsetX;
+            dragStartY = event.clientY - offsetY;
+            canvas.style.cursor = "grabbing"; // Change cursor to grabbing
+        }
+
+        // Handle dragging the canvas
+        function dragCanvas(event) {
+            if (event.buttons === 1) { // Check if the left mouse button is pressed
+                offsetX = event.clientX - dragStartX;
+                offsetY = event.clientY - dragStartY;
+                redraw(); // Redraw the canvas content with the new offsets
+            }
+        }
+
+        // Stop dragging
+        function stopDrag() {
+            canvas.style.cursor = "grab"; // Reset cursor to grab
         }
 
         // Game loop to draw the image on the canvas
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-            ctx.drawImage(tileset, 0, 0, 32, 32); // Draw the image (adjust the x, y for positioning)
-
-            // Add any game logic or drawing here
+            redraw(); // Redraw content based on current offsets
             requestAnimationFrame(gameLoop); // Continue the game loop
+        }
+
+        // Redraw the game content based on the current drag offsets
+        function redraw() {
+            ctx.drawImage(tileset, offsetX, offsetY, 32, 32); // Draw the image at the new position
+            // You can add more drawing logic here as needed
         }
 
         function openSettings() {
