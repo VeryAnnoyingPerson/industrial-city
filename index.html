@@ -51,86 +51,8 @@
 
     <canvas id="gameCanvas"></canvas>
 
-    <script>
-        let tileset = new Image();
-        tileset.src = "https://raw.githubusercontent.com/VeryAnnoyingPerson/industrial-city/main/tile_0001.png"; // Update with actual path
-
-        let canvas = document.getElementById("gameCanvas");
-        let ctx = canvas.getContext("2d");
-
-        let offsetX = 0, offsetY = 0;
-        let startX, startY;
-
-        // Ensure the canvas size is updated dynamically
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-
-        // Start the game and hide the menu
-        function startGame() {
-            document.getElementById("menu").style.display = "none";
-            document.getElementById("gameCanvas").style.display = "block";
-
-            resizeCanvas(); // Set the initial canvas size
-
-            tileset.onload = function() {
-                gameLoop(); // Start the game loop
-            };
-
-            tileset.onerror = function() {
-                alert("Error: Failed to load the tileset image. Please check the image URL.");
-            };
-        }
-
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawMap();
-            requestAnimationFrame(gameLoop);
-        }
-
-        // Draw the map with the tileset
-        function drawMap() {
-            for (let x = 0; x < canvas.width; x += 32) {
-                for (let y = 0; y < canvas.height; y += 32) {
-                    ctx.drawImage(tileset, 0, 0, 32, 32, x + offsetX, y + offsetY, 32, 32);
-                }
-            }
-        }
-
-        // Touch dragging for movement
-        canvas.addEventListener("touchstart", (e) => {
-            let touch = e.touches[0];
-            startX = touch.clientX;
-            startY = touch.clientY;
-        });
-
-        canvas.addEventListener("touchmove", (e) => {
-            let touch = e.touches[0];
-            offsetX += touch.clientX - startX;
-            offsetY += touch.clientY - startY;
-            startX = touch.clientX;
-            startY = touch.clientY;
-        });
-
-        // Resize canvas on window resize
-        window.addEventListener("resize", resizeCanvas);
-
-        function openSettings() {
-            alert("Opening settings...");
-        }
-
-        function showCredits() {
-            alert("Game by [Your Name]");
-        }
-
-        // Alert if canvas doesn't load correctly
-        window.onload = function() {
-            if (!canvas.getContext) {
-                alert("Error: Canvas is not supported in this browser.");
-            }
-        };
-    </script>
+    <!-- Link to External JavaScript -->
+    <script src="game.js"></script>
 
 </body>
 </html>
