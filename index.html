@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Industrial City</title>
+    <title>My Game</title>
     <link rel="manifest" href="manifest.json">
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             background-color: #f0f0f0;
-            padding: 20px;
+            padding: 50px;
         }
         .button {
             display: block;
@@ -28,53 +28,64 @@
             background-color: #0056b3;
         }
         #gameCanvas {
-            display: block;
+            display: none; /* Hide game at start */
             margin-top: 20px;
-            background-color: #3ca043; /* Grass color */
+            background-color: white;
             border: 2px solid black;
         }
     </style>
 </head>
 <body>
 
-    <h1>Industrial City</h1>
+    <h1>Welcome to My Game</h1>
 
-    <button class="button" onclick="startGame()">Start Game</button>
+    <button class="button" onclick="startGame()">Play</button>
+    <button class="button" onclick="openSettings()">Settings</button>
+    <button class="button" onclick="showCredits()">Credits</button>
 
     <!-- Game Canvas -->
-    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
 
     <script>
-        let canvas = document.getElementById("gameCanvas");
-        let ctx = canvas.getContext("2d");
-        let buildings = []; // Stores buildings placed on the land
+        let tileset = new Image();
+        // Update the URL to match your specific file location
+        tileset.src = "https://raw.githubusercontent.com/VeryAnnoyingPerson/industrial-city/main/tile_0001.png";  // Update with the correct URL
 
+        let canvas, ctx;
+
+        // Start the game when the "Play" button is pressed
         function startGame() {
-            drawMap();
-            canvas.addEventListener("click", placeBuilding);
-        }
+            document.getElementById("gameCanvas").style.display = "block";
+            canvas = document.getElementById("gameCanvas");
+            ctx = canvas.getContext("2d");
 
-        function drawMap() {
-            ctx.fillStyle = "#3ca043"; // Green grass background
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
+            // Load the tileset image
+            tileset.onload = function() {
+                console.log("Tileset image loaded");
+                gameLoop(); // Start the game loop after the image is loaded
+            }
 
-        function placeBuilding(event) {
-            let rect = canvas.getBoundingClientRect();
-            let x = event.clientX - rect.left;
-            let y = event.clientY - rect.top;
-
-            buildings.push({ x: x, y: y });
-
-            drawMap(); // Redraw background
-            for (let building of buildings) {
-                drawBuilding(building.x, building.y);
+            // Handle image load error
+            tileset.onerror = function() {
+                console.error("Error loading the tileset image");
             }
         }
 
-        function drawBuilding(x, y) {
-            ctx.fillStyle = "gray"; // Simple gray square for building
-            ctx.fillRect(x - 10, y - 10, 20, 20); // Draw at clicked position
+        // Game loop to draw the image on the canvas
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+            ctx.drawImage(tileset, 0, 0, 32, 32); // Draw the image (adjust the x, y for positioning)
+
+            // Add any game logic or drawing here
+            requestAnimationFrame(gameLoop); // Continue the game loop
+        }
+
+        function openSettings() {
+            alert("Opening settings...");
+        }
+
+        function showCredits() {
+            alert("Game by [Your Name]");
         }
     </script>
 
