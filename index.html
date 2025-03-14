@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Game</title>
+    <title>Industrial City</title>
     <link rel="manifest" href="manifest.json">
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             background-color: #f0f0f0;
-            padding: 50px;
+            margin: 0; /* Remove default margin */
+            padding: 0; /* Remove padding */
+            overflow: hidden; /* Prevent scrolling */
         }
         .button {
             display: block;
@@ -28,89 +30,79 @@
             background-color: #0056b3;
         }
         #gameCanvas {
-            display: none; /* Hide game at start */
-            margin-top: 20px;
-            background-color: white;
-            border: 2px solid black;
+            display: none; /* Hide the game until Play is pressed */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw; /* Full width of the viewport */
+            height: 100vh; /* Full height of the viewport */
+            touch-action: none; /* Prevent browser gestures */
         }
     </style>
 </head>
 <body>
 
-    <h1>Welcome to My Game</h1>
-
-    <button class="button" onclick="startGame()">Play</button>
-    <button class="button" onclick="openSettings()">Settings</button>
-    <button class="button" onclick="showCredits()">Credits</button>
+    <div id="menu">
+        <h1>Welcome to Industrial City</h1>
+        <button class="button" onclick="startGame()">Play</button>
+        <button class="button" onclick="openSettings()">Settings</button>
+        <button class="button" onclick="showCredits()">Credits</button>
+    </div>
 
     <!-- Game Canvas -->
-    <canvas id="gameCanvas" width="800" height="800"></canvas>
+    <canvas id="gameCanvas"></canvas>
 
     <script>
         let tileset = new Image();
-        tileset.src = "https://raw.githubusercontent.com/VeryAnnoyingPerson/industrial-city/main/your-image.png"; // Update with the correct URL
+        tileset.src = "https://raw.githubusercontent.com/VeryAnnoyingPerson/industrial-city/main/your-image.png"; // Update with actual path
 
-        let canvas, ctx;
-        let dragStartX = 0, dragStartY = 0; // Starting positions for drag
-        let offsetX = 0, offsetY = 0; // Offsets for dragging
+        let canvas = document.getElementById("gameCanvas");
+        let ctx = canvas.getContext("2d");
 
-        // Start the game when the "Play" button is pressed
+        let offsetX = 0, offsetY = 0; // Camera position
+        let startX, startY; // Touch start position
+
         function startGame() {
-            document.getElementById("gameCanvas").style.display = "block";
-            canvas = document.getElementById("gameCanvas");
-            ctx = canvas.getContext("2d");
+            document.getElementById("menu").style.display = "none"; // Hide menu
+            document.getElementById("gameCanvas").style.display = "block"; // Show game
 
-            // Load the tileset image
+            // Resize the canvas to fit the screen size
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
             tileset.onload = function() {
-                console.log("Tileset image loaded");
-                gameLoop(); // Start the game loop after the image is loaded
-            }
-
-            // Handle image load error
-            tileset.onerror = function() {
-                console.error("Error loading the tileset image");
-            }
-
-            // Event listeners for dragging
-            canvas.addEventListener("mousedown", startDrag);
-            canvas.addEventListener("mousemove", dragCanvas);
-            canvas.addEventListener("mouseup", stopDrag);
-            canvas.addEventListener("mouseleave", stopDrag);
+                gameLoop(); // Start the game loop
+            };
         }
 
-        // Handle the start of a drag
-        function startDrag(event) {
-            dragStartX = event.clientX - offsetX;
-            dragStartY = event.clientY - offsetY;
-            canvas.style.cursor = "grabbing"; // Change cursor to grabbing
-        }
-
-        // Handle dragging the canvas
-        function dragCanvas(event) {
-            if (event.buttons === 1) { // Check if the left mouse button is pressed
-                offsetX = event.clientX - dragStartX;
-                offsetY = event.clientY - dragStartY;
-                redraw(); // Redraw the canvas content with the new offsets
-            }
-        }
-
-        // Stop dragging
-        function stopDrag() {
-            canvas.style.cursor = "grab"; // Reset cursor to grab
-        }
-
-        // Game loop to draw the image on the canvas
         function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-            redraw(); // Redraw content based on current offsets
-            requestAnimationFrame(gameLoop); // Continue the game loop
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawMap();
+            requestAnimationFrame(gameLoop);
         }
 
-        // Redraw the game content based on the current drag offsets
-        function redraw() {
-            ctx.drawImage(tileset, offsetX, offsetY, 32, 32); // Draw the image at the new position
-            // You can add more drawing logic here as needed
+        function drawMap() {
+            for (let x = 0; x < canvas.width; x += 32) {
+                for (let y = 0; y < canvas.height; y += 32) {
+                    ctx.drawImage(tileset, 0, 0, 32, 32, x + offsetX, y + offsetY, 32, 32);
+                }
+            }
         }
+
+        // Touch dragging for movement
+        canvas.addEventListener("touchstart", (e) => {
+            let touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+        });
+
+        canvas.addEventListener("touchmove", (e) => {
+            let touch = e.touches[0];
+            offsetX += touch.clientX - startX;
+            offsetY += touch.clientY - startY;
+            startX = touch.clientX;
+            startY = touch.clientY;
+        });
 
         function openSettings() {
             alert("Opening settings...");
