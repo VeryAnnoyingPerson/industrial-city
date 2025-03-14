@@ -115,6 +115,7 @@
                 for (let y = startYTile; y < endYTile; y++) {
                     if (x >= 0 && y >= 0 && x < worldWidth && y < worldHeight) {
                         // Draw the tile image at the correct position
+                        // The math here ensures that the tiles align properly in the grid
                         ctx.drawImage(tileset, 0, 0, tileWidth, tileHeight, (x * tileWidth) - offsetX, (y * tileHeight) - offsetY, tileWidth, tileHeight);
                     }
                 }
