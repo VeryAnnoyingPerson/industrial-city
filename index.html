@@ -94,8 +94,12 @@
         function gameLoop() {
             // Clear the entire canvas before drawing the new tiles
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the updated map based on the current offsets
             drawMap();
-            requestAnimationFrame(gameLoop); // Continue the loop
+
+            // Continue the loop
+            requestAnimationFrame(gameLoop);
         }
 
         // Function to draw the tile map
@@ -106,10 +110,11 @@
             let endXTile = Math.ceil((offsetX + canvas.width) / tileWidth);
             let endYTile = Math.ceil((offsetY + canvas.height) / tileHeight);
 
+            // Draw only the visible tiles
             for (let x = startXTile; x < endXTile; x++) {
                 for (let y = startYTile; y < endYTile; y++) {
                     if (x >= 0 && y >= 0 && x < worldWidth && y < worldHeight) {
-                        // Draw only the tiles in the visible area
+                        // Draw the tile image at the correct position
                         ctx.drawImage(tileset, 0, 0, tileWidth, tileHeight, (x * tileWidth) - offsetX, (y * tileHeight) - offsetY, tileWidth, tileHeight);
                     }
                 }
@@ -135,7 +140,6 @@
             startY = touch.clientY;
 
             // Update the camera's offset (simulate movement)
-            drawMap(); // Redraw the map with the updated camera position
         });
 
         // Resize the canvas and reset view when the screen size changes (optional)
