@@ -8,11 +8,9 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            overflow: hidden; /* Prevent scrolling */
         }
         .button {
             display: block;
@@ -36,7 +34,14 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            touch-action: none;
+            touch-action: none; /* Prevent default touch actions like pinch and zoom */
+        }
+        #menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
         }
     </style>
 </head>
@@ -45,14 +50,89 @@
     <div id="menu">
         <h1>Welcome to Industrial City</h1>
         <button class="button" onclick="startGame()">Play</button>
-        <button class="button" onclick="openSettings()">Settings</button>
-        <button class="button" onclick="showCredits()">Credits</button>
+        <button class="button" onclick="alert('Settings')">Settings</button>
+        <button class="button" onclick="alert('Credits')">Credits</button>
     </div>
 
+    <!-- Game Canvas -->
     <canvas id="gameCanvas"></canvas>
 
-    <!-- Link to External JavaScript -->
-    <script src="game.js"></script>
+    <script>
+        let tileset = new Image();
+        tileset.src = "https://raw.githubusercontent.com/VeryAnnoyingPerson/industrial-city/main/tile_0001.png"; // Path to grass tile
+
+        let canvas = document.getElementById("gameCanvas");
+        let ctx = canvas.getContext("2d");
+
+        let tileWidth = 32;  // Tile width in pixels
+        let tileHeight = 32; // Tile height in pixels
+        let worldWidth = 50;  // Number of tiles in width
+        let worldHeight = 50; // Number of tiles in height
+        let offsetX = 0, offsetY = 0; // Camera position
+        let startX, startY; // Touch start position
+        let gameStarted = false;
+
+        // Game start function
+        function startGame() {
+            document.getElementById("menu").style.display = "none"; // Hide menu
+            document.getElementById("gameCanvas").style.display = "block"; // Show game
+
+            // Resize the canvas to fit the screen size
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            tileset.onload = function() {
+                gameLoop(); // Start the game loop
+            };
+            gameStarted = true;
+        }
+
+        // Game loop function
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawMap();
+            requestAnimationFrame(gameLoop); // Continue the loop
+        }
+
+        // Function to draw the tile map
+        function drawMap() {
+            for (let x = 0; x < worldWidth; x++) {
+                for (let y = 0; y < worldHeight; y++) {
+                    // Draw the tile, adjusting the position based on the camera offset
+                    ctx.drawImage(tileset, 0, 0, tileWidth, tileHeight, x * tileWidth - offsetX, y * tileHeight - offsetY, tileWidth, tileHeight);
+                }
+            }
+        }
+
+        // Touch dragging for movement
+        document.getElementById("gameCanvas").addEventListener("touchstart", (e) => {
+            if (!gameStarted) return; // Only allow dragging if the game has started
+
+            let touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+        });
+
+        document.getElementById("gameCanvas").addEventListener("touchmove", (e) => {
+            if (!gameStarted) return; // Only allow dragging if the game has started
+
+            let touch = e.touches[0];
+            offsetX += touch.clientX - startX;
+            offsetY += touch.clientY - startY;
+            startX = touch.clientX;
+            startY = touch.clientY;
+
+            // Update the camera's offset (simulate movement)
+            drawMap(); // Redraw the map with the updated camera position
+        });
+
+        // Resize the canvas and reset view when the screen size changes (optional)
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            drawMap(); // Redraw the map to adjust to new size
+        });
+    </script>
 
 </body>
 </html>
